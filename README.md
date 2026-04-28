@@ -1,13 +1,5 @@
-Download right [here](https://github.com/Spi3lot/vectorscope4/releases) on **GitHub** or on **itch.io**: [Vectorscope V4 by Spi3lot](https://spi3lot.itch.io/vectorscope-v4)
+This project is a 'fork' my [Vectorscope V4](https://github.com/spi3lot/vectorscope4).
 
-This tool gives you the ability to visualize stereo songs! And mono ones as well, but that'll look pretty boring. More than 2 channels are sadly not supported yet.
+The difference is that Microscope uses only the microphone as input.
 
-It plots the left audio channel on the horizontal axis and the right audio channel on the vertical axis proportionally to their respective amplitudes.
-
-This is the fourth version in my series of vectorscopes/oscilloscopes, this time severely optimized using Godot.
-
-History of utilized technologies in my vectorscope series
-- V1 (Versatile Vectorscope) - Processing 3
-- V2 - Unity
-- V3 - Processing 4
-- V4 - Godot 4
+This makes it easier to port to to e.g. Android.
