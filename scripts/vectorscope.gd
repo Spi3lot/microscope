@@ -8,17 +8,6 @@ class_name Vectorscope
         buffer_length = value
         if capture: capture.buffer_length = value
 
-@export var loopback := true:
-    set(value):
-        loopback = value
-        paused = false
-        plot_scale = 1.0 if loopback else db_to_linear(audio_player.volume_db)
-
-        if audio_player.stream:
-            _set_audio_player_stream_paused(loopback)
-        else:
-            _select_file()
-
 @export var line_antialiasing := true:
     set(value):
         line_antialiasing = value
@@ -66,7 +55,6 @@ func _ready() -> void:
 
     WasapiLoopbackRecorder.BufferLength = buffer_length
     audio_player.finished.connect(audio_player.play)
-    %FileDialog.file_selected.connect(_on_file_selected)
     get_window().size_changed.connect(_clear_sub_viewport)
 
 
@@ -100,13 +88,7 @@ func _handle_input_event_key(event: InputEventKey) -> void:
     match event.keycode:
         KEY_SPACE:
             paused = not paused
-
-            if loopback:
-                WasapiLoopbackRecorder.TogglePaused()
-            else:
-                _set_audio_player_stream_paused(paused)
-        KEY_ESCAPE:
-            _select_file()
+            _set_audio_player_stream_paused(paused)
         KEY_R:
             _reset_zoom()
 
@@ -156,19 +138,6 @@ func _bake_raster_to_vector() -> void:
 
 func _clear_sub_viewport():
     sub_viewport_container.sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ONCE
-
-
-func _on_file_selected(path: String) -> void:
-    audio_player.stream = AudioLoader.loadfile(path)
-    audio_player.play()
-    _set_audio_player_stream_paused(loopback)
-
-
-func _select_file() -> void:
-    if loopback or Engine.is_editor_hint():
-        return
-
-    %FileDialog.visible = true
 
 
 func _optimize_line_width() -> void:

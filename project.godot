@@ -24,11 +24,6 @@ config/icon="res://itch32.png"
 
 buses/default_bus_layout="uid://b3kfwrvx17gmb"
 
-[autoload]
-
-WasapiLoopbackRecorder="*uid://cw40ih6vhgu6c"
-AudioLoader="*uid://ba454av62hfhb"
-
 [debug]
 
 settings/stdout/print_fps=true

@@ -31,18 +31,11 @@ func _process(delta: float) -> void:
         if frame_buffer.is_empty() \
         else frame_buffer[-1]
 
-    if vectorscope.loopback:
-        time_multiplier = 1.0
-        sample_rate = WasapiLoopbackRecorder.SampleRate
-        var available: int = WasapiLoopbackRecorder.GetFramesAvailable()
-        var size: int = _optimal_frame_buffer_size(delta, available)
-        frame_buffer = WasapiLoopbackRecorder.GetBuffer(size)
-    else:
-        time_multiplier = vectorscope.audio_player.pitch_scale
-        sample_rate = AudioServer.get_mix_rate() * _get_stereo_channel_count()
-        var available: int = vectorscope.capture.get_frames_available()
-        var size: int = _optimal_frame_buffer_size(delta, available)
-        frame_buffer = vectorscope.capture.get_buffer(size)
+    time_multiplier = vectorscope.audio_player.pitch_scale
+    sample_rate = AudioServer.get_mix_rate() * _get_stereo_channel_count()
+    var available: int = vectorscope.capture.get_frames_available()
+    var size: int = _optimal_frame_buffer_size(delta, available)
+    frame_buffer = vectorscope.capture.get_buffer(size)
 
     if frame_buffer.size() > 0:
         _update_line_properties(previous_frame)
