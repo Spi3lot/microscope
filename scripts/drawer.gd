@@ -10,7 +10,6 @@ var frame_buffer := PackedVector2Array()
 var line_positions := PackedVector2Array()
 var line_colors := PackedColorArray()
 var line_whites := PackedColorArray()
-var paused := false
 
 var time_multiplier: float
 var sample_rate: float
@@ -18,15 +17,6 @@ var sample_rate: float
 @onready var vectorscope: Vectorscope = %Vectorscope
 
 func _process(delta: float) -> void:
-    if vectorscope.paused:
-        if not paused:
-            paused = true
-            queue_redraw()
-
-        return
-
-    paused = false
-
     var previous_frame := Vector2.ZERO \
         if frame_buffer.is_empty() \
         else frame_buffer[-1]
@@ -43,9 +33,6 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-    if paused:
-        return
-
     _draw_fade_rect()
     _draw_multilines()
 

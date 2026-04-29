@@ -23,6 +23,7 @@ config/icon="res://itch32.png"
 [audio]
 
 buses/default_bus_layout="uid://b3kfwrvx17gmb"
+driver/enable_input=true
 
 [debug]
 

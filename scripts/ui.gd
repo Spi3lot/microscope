@@ -8,7 +8,6 @@ extends Control
 @export var color_picker_button: ColorPickerButton
 
 @export var pan_control: Control
-@export var speed_control: Control
 @export var volume_control: Control
 
 @onready var vectorscope: Vectorscope = %Vectorscope

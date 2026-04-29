@@ -37,14 +37,6 @@ const MAX_SCALE := Vector2(MAX_ZOOM, MAX_ZOOM)
 var plot_scale := 1.0
 var vector_transform := Transform2D.IDENTITY
 
-var paused := false:
-    set(value):
-        var toggled := paused != value
-        paused = value
-
-        if toggled and not paused:
-            _bake_raster_to_vector()
-
 @onready var bus_idx := AudioServer.get_bus_index(&"Player")
 @onready var capture_idx := AudioServer.get_bus_effect_count(bus_idx) - 1
 @onready var capture: AudioEffectCapture = AudioServer.get_bus_effect(bus_idx, capture_idx)
@@ -53,8 +45,6 @@ func _ready() -> void:
     if Engine.is_editor_hint():
         return
 
-    WasapiLoopbackRecorder.BufferLength = buffer_length
-    audio_player.finished.connect(audio_player.play)
     get_window().size_changed.connect(_clear_sub_viewport)
 
 
@@ -71,10 +61,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _handle_input_event_mouse_motion(event: InputEventMouseMotion) -> void:
-    if paused:
-        sub_viewport_container.position += event.relative
-    else:
-        vector_transform.origin += event.relative
+    vector_transform.origin += event.relative
 
 
 func _handle_input_event_mouse_button(event: InputEventMouseButton) -> void:
@@ -86,9 +73,6 @@ func _handle_input_event_mouse_button(event: InputEventMouseButton) -> void:
 
 func _handle_input_event_key(event: InputEventKey) -> void:
     match event.keycode:
-        KEY_SPACE:
-            paused = not paused
-            _set_audio_player_stream_paused(paused)
         KEY_R:
             _reset_zoom()
 
@@ -96,44 +80,16 @@ func _handle_input_event_key(event: InputEventKey) -> void:
 func _apply_zoom(multiplier: float) -> void:
     var mouse_pos := sub_viewport_container.get_local_mouse_position()
 
-    if paused:
-        var old_pivot := sub_viewport_container.pivot_offset
-        sub_viewport_container.pivot_offset = mouse_pos
-        sub_viewport_container.position += (mouse_pos - old_pivot) * (sub_viewport_container.scale - Vector2.ONE)
-        sub_viewport_container.scale = MAX_SCALE.min(sub_viewport_container.scale * multiplier)
-    else:
-        var trans := Transform2D() \
-            .translated(-mouse_pos) \
-            .scaled(Vector2(multiplier, multiplier)) \
-            .translated(mouse_pos)
+    var trans := Transform2D() \
+        .translated(-mouse_pos) \
+        .scaled(Vector2(multiplier, multiplier)) \
+        .translated(mouse_pos)
 
-        vector_transform = trans * vector_transform
+    vector_transform = trans * vector_transform
 
 
 func _reset_zoom() -> void:
-    if paused:
-        var inv := vector_transform.affine_inverse()
-        sub_viewport_container.position = inv.origin
-        sub_viewport_container.pivot_offset = Vector2.ZERO
-        sub_viewport_container.scale = inv.get_scale()
-    else:
-        vector_transform = Transform2D.IDENTITY
-
-
-func _set_audio_player_stream_paused(value: bool) -> void:
-    audio_player.stream_paused = value
-    AudioServer.set_bus_effect_enabled(bus_idx, capture_idx, not value)
-
-
-func _bake_raster_to_vector() -> void:
-    var raster_transform := sub_viewport_container.get_transform()
-    vector_transform = raster_transform * vector_transform
-    sub_viewport_container.position = Vector2.ZERO
-    sub_viewport_container.pivot_offset = Vector2.ZERO
-    sub_viewport_container.scale = Vector2.ONE
-
-    if not raster_transform.is_equal_approx(Transform2D.IDENTITY):
-        _clear_sub_viewport()
+    vector_transform = Transform2D.IDENTITY
 
 
 func _clear_sub_viewport():
